@@ -1,7 +1,6 @@
 const Card = require('../models/card');
-const { ERROR_BAD_REQUEST, ERROR_NOT_FOUND, ERROR_INTERNAL_SERVER } = require('../utils/errors');
+const { ERROR_INCORRECT_REQUEST, ERROR_NOT_FOUND, ERROR_INTERNAL_SERVER } = require('../utils/errors');
 const { STATUS_OK, STATUS_CREATED } = require('../utils/status');
-
 
 const getCards = async (req, res) => {
   try {
@@ -25,7 +24,7 @@ const createCard = async (req, res) => {
   } catch (err) {
     if (err.name === 'ValidationError') {
       res
-        .status(ERROR_BAD_REQUEST)
+        .status(ERROR_INCORRECT_REQUEST)
         .send({
           message: 'Data is incorrect',
         });
@@ -53,7 +52,7 @@ const deleteCardById = async (req, res) => {
         });
     } else if (err.name === 'CastError') {
       res
-        .status(ERROR_BAD_REQUEST)
+        .status(ERROR_INCORRECT_REQUEST)
         .send({
           message: 'Data is incorrect',
         });
@@ -85,7 +84,7 @@ const addCardLike = async (req, res) => {
         });
     } else if (err.name === 'CastError') {
       res
-        .status(ERROR_BAD_REQUEST)
+        .status(ERROR_INCORRECT_REQUEST)
         .send({
           message: 'Data is incorrect',
         });
@@ -117,7 +116,7 @@ const deleteCardLike = async (req, res) => {
         });
     } else if (err.name === 'CastError') {
       res
-        .status(ERROR_BAD_REQUEST)
+        .status(ERROR_INCORRECT_REQUEST)
         .send({
           message: 'Data is incorrect',
         });
@@ -131,4 +130,6 @@ const deleteCardLike = async (req, res) => {
   }
 };
 
-module.exports = { getCards, createCard, deleteCardById, addCardLike, deleteCardLike };
+module.exports = {
+  getCards, createCard, deleteCardById, addCardLike, deleteCardLike,
+};
