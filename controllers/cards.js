@@ -1,12 +1,15 @@
 const Card = require('../models/card');
+const { ERROR_BAD_REQUEST, ERROR_NOT_FOUND, ERROR_INTERNAL_SERVER } = require('../utils/errors');
+const { STATUS_OK, STATUS_CREATED } = require('../utils/status');
+
 
 const getCards = async (req, res) => {
   try {
     const cards = await Card.find({});
-    res.status(200).send(cards);
+    res.status(STATUS_OK).send(cards);
   } catch (err) {
     res
-      .status(500)
+      .status(ERROR_INTERNAL_SERVER)
       .send({
         message: 'Internal server error',
       });
@@ -18,17 +21,17 @@ const createCard = async (req, res) => {
   const owner = req.user._id;
   try {
     const card = await Card.create({ name, link, owner });
-    res.status(201).send(card);
+    res.status(STATUS_CREATED).send(card);
   } catch (err) {
     if (err.name === 'ValidationError') {
       res
-        .status(400)
+        .status(ERROR_BAD_REQUEST)
         .send({
           message: 'Data is incorrect',
         });
     } else {
       res
-        .status(500)
+        .status(ERROR_INTERNAL_SERVER)
         .send({
           message: 'Internal Server Error',
         });
@@ -40,23 +43,23 @@ const deleteCardById = async (req, res) => {
   try {
     const card = await Card.findByIdAndDelete(req.params.cardId)
       .orFail(() => new Error('Not found'));
-    res.status(201).send(card);
+    res.status(STATUS_CREATED).send(card);
   } catch (err) {
     if (err.message === 'Not found') {
       res
-        .status(404)
+        .status(ERROR_NOT_FOUND)
         .send({
           message: 'Card not found',
         });
     } else if (err.name === 'CastError') {
       res
-        .status(400)
+        .status(ERROR_BAD_REQUEST)
         .send({
           message: 'Data is incorrect',
         });
     } else {
       res
-        .status(500)
+        .status(ERROR_INTERNAL_SERVER)
         .send({
           message: 'Internal Server Error',
         });
@@ -72,23 +75,23 @@ const addCardLike = async (req, res) => {
       { new: true },
     )
       .orFail(new Error('Not found'));
-    res.status(201).send(card);
+    res.status(STATUS_CREATED).send(card);
   } catch (err) {
     if (err.message === 'Not found') {
       res
-        .status(404)
+        .status(ERROR_NOT_FOUND)
         .send({
           message: 'Card not found',
         });
     } else if (err.name === 'CastError') {
       res
-        .status(400)
+        .status(ERROR_BAD_REQUEST)
         .send({
           message: 'Data is incorrect',
         });
     } else {
       res
-        .status(500)
+        .status(ERROR_INTERNAL_SERVER)
         .send({
           message: 'Internal Server Error',
         });
@@ -108,19 +111,19 @@ const deleteCardLike = async (req, res) => {
   } catch (err) {
     if (err.message === 'Not found') {
       res
-        .status(404)
+        .status(ERROR_NOT_FOUND)
         .send({
           message: 'Card not found',
         });
     } else if (err.name === 'CastError') {
       res
-        .status(400)
+        .status(ERROR_BAD_REQUEST)
         .send({
           message: 'Data is incorrect',
         });
     } else {
       res
-        .status(500)
+        .status(ERROR_INTERNAL_SERVER)
         .send({
           message: 'Internal server error',
         });
