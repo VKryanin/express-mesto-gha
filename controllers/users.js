@@ -1,5 +1,5 @@
 const User = require('../models/user');
-const { ERROR_BAD_REQUEST, ERROR_NOT_FOUND, ERROR_INTERNAL_SERVER } = require('../utils/errors');
+const { ERROR_INCORRECT_REQUEST, ERROR_NOT_FOUND, ERROR_INTERNAL_SERVER } = require('../utils/errors');
 const { STATUS_OK, STATUS_CREATED } = require('../utils/status');
 
 const getUsers = async (req, res) => {
@@ -31,7 +31,7 @@ const getUserById = async (req, res) => {
         });
     } else if (err.name === 'CastError') {
       res
-        .status(ERROR_BAD_REQUEST)
+        .status(ERROR_INCORRECT_REQUEST)
         .send({
           message: 'Data is incorrect',
         });
@@ -54,7 +54,7 @@ const createUser = async (req, res) => {
   } catch (err) {
     if (err.name === 'ValidationError') {
       res
-        .status(ERROR_BAD_REQUEST)
+        .status(ERROR_INCORRECT_REQUEST)
         .send({
           message: 'Data is incorrect',
         });
@@ -91,7 +91,7 @@ const updateProfile = async (req, res) => {
         .send({ message: 'User not found' });
     } else if (err.name === 'ValidationError') {
       res
-        .status(ERROR_BAD_REQUEST)
+        .status(ERROR_INCORRECT_REQUEST)
         .send({ message: 'Data is incorrect' });
     } else {
       res
@@ -123,7 +123,7 @@ const updateAvatar = async (req, res) => {
         .send({ message: 'User not found' });
     } else if (err.name === 'ValidationError') {
       res
-        .status(ERROR_BAD_REQUEST)
+        .status(ERROR_INCORRECT_REQUEST)
         .send({ message: 'Data is incorrect' });
     } else {
       res
@@ -133,4 +133,6 @@ const updateAvatar = async (req, res) => {
   }
 };
 
-module.exports = { getUsers, getUserById, createUser, updateAvatar, updateProfile };
+module.exports = {
+  getUsers, getUserById, createUser, updateAvatar, updateProfile,
+};
