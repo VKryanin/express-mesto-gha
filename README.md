@@ -14,3 +14,8 @@
 
 `npm run start` — запускает сервер   
 `npm run dev` — запускает сервер с hot-reload
+
+## Создатель
+
+**Vitaly Kryanin**
+`GitHub` — https://github.com/VKryanin
