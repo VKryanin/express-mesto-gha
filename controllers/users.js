@@ -1,6 +1,7 @@
 const User = require('../models/user');
-const { ERROR_INCORRECT_REQUEST, ERROR_NOT_FOUND, ERROR_INTERNAL_SERVER } = require('../utils/errors');
-const { STATUS_OK, STATUS_CREATED } = require('../utils/status');
+const {
+  STATUS_OK, STATUS_CREATED, ERROR_INCORRECT_REQUEST, ERROR_NOT_FOUND, ERROR_INTERNAL_SERVER,
+} = require('../utils/status');
 
 const getUsers = async (req, res) => {
   try {
