@@ -12,13 +12,7 @@
     "type": "git",
     "url": "git+https://github.com/VKryanin/express-mesto-gha.git"
   },
-  "keywords": [
-    "Mesto",
-    "backend",
-    "express",
-    "mongoose",
-    "mongodb"
-  ],
+  "keywords": [],
   "author": "Vitaly Kryanin",
   "license": "ISC",
   "bugs": {
