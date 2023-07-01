@@ -103,7 +103,7 @@ const deleteCardLike = async (req, res) => {
   try {
     const card = await Card.findByIdAndUpdate(
       req.params.cardId,
-      { $pull: { likes: req.user._id } }, // убрать _id из массива
+      { $pull: { likes: req.user } }, // убрать _id из массива +
       { new: true },
     )
       .orFail(new Error('Not found'));
