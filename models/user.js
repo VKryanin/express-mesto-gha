@@ -12,9 +12,8 @@ const userSchema = new mongoose.Schema({
   email: {
     type: String,
     validate: {
-      validator: (mail) => {
-        validator.isUrl(mail)
-      }
+      validator: (mail) => validator.isEmail(mail),
+      message: 'Invalid Email'
     },
     required: true,
     unique: true,
@@ -35,8 +34,19 @@ const userSchema = new mongoose.Schema({
 
   avatar: {
     type: String,
-    default: 'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png'
+    default: 'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png',
+    validate: {
+      validator: (url) => validator.isURL(url),
+      message: 'Invalid URL',
+    }
   },
 });
+
+userSchema.methods.toJSON = function () {
+  const user = this.toObject();
+  delete user.password;
+
+  return user;
+};
 
 module.exports = mongoose.model('user', userSchema);
