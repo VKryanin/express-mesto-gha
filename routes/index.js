@@ -6,12 +6,8 @@ const { celebrate, Joi } = require('celebrate');
 const urlCheking = require('../utils/regular')
 const auth = require('../midlwares/auth');
 const { createUser, login } = require('../controllers/users');
+const {NotFoundError} = require('../utils/errors')
 
-router.use('/users', userRoutes);
-router.use('/cards', cardRoutes);
-router.use('/*', (req, res) => {
-  res.status(ERROR_NOT_FOUND).send({ message: 'Error 404. Page not found' });
-});
 
 router.post('/signup', celebrate({
   body: Joi.object().keys({
@@ -31,5 +27,11 @@ router.post('/signin', celebrate({
 }), login);
 
 router.use(auth);
+
+router.use('/users', userRoutes);
+router.use('/cards', cardRoutes);
+router.use('/*', (req, res, next) => {
+  next(new NotFoundError('Error 404. Page not found'))
+});
 
 module.exports = router;

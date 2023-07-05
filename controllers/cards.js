@@ -2,131 +2,95 @@ const Card = require('../models/card');
 const {
   STATUS_OK, STATUS_CREATED, ERROR_INCORRECT_REQUEST, ERROR_NOT_FOUND, ERROR_INTERNAL_SERVER,
 } = require('../utils/status');
+const {
+  IncorrectRequestError,
+  UnauthorizedError,
+  DeletionError,
+  NotFoundError,
+  EmailIsBusyError
+} = require('../utils/errors')
 
 const getCards = async (req, res) => {
   try {
     const cards = await Card.find({});
     res.status(STATUS_OK).send(cards);
   } catch (err) {
-    res
-      .status(ERROR_INTERNAL_SERVER)
-      .send({
-        message: 'Internal server error',
-      });
+    next(err)
   }
 };
 
-const createCard = async (req, res) => {
+const createCard = async (req, res, next) => {
   const { name, link } = req.body;
   const owner = req.user._id;
   try {
     const card = await Card.create({ name, link, owner });
     res.status(STATUS_CREATED).send(card);
   } catch (err) {
-    if (err.name === 'ValidationError') {
-      res
-        .status(ERROR_INCORRECT_REQUEST)
-        .send({
-          message: 'Data is incorrect',
-        });
+    if (err instanceof IncorrectRequestError) {
+      next(new IncorrectRequestError('The data is incorrect'));
     } else {
-      res
-        .status(ERROR_INTERNAL_SERVER)
-        .send({
-          message: 'Internal Server Error',
-        });
+      next(err);
     }
   }
 };
 
-const deleteCardById = async (req, res) => {
+const deleteCardById = async (req, res, next) => {
   try {
-    const card = await Card.findByIdAndDelete(req.params.cardId)
-      .orFail(() => new Error('Not found'));
-    res.status(STATUS_CREATED).send(card);
-  } catch (err) {
-    if (err.message === 'Not found') {
-      res
-        .status(ERROR_NOT_FOUND)
-        .send({
-          message: 'Card not found',
-        });
-    } else if (err.name === 'CastError') {
-      res
-        .status(ERROR_INCORRECT_REQUEST)
-        .send({
-          message: 'Data is incorrect',
-        });
+    const card = await Card.findById(req.params.cardId);
+    if (!card) {
+      throw new NotFoundError('Card is not found');
+    } else if (card.owner.toString() === req.user._id) {
+      await Card.deleteOne(card);
+      res.status(STATUS_OK).send({ data: card });
     } else {
-      res
-        .status(ERROR_INTERNAL_SERVER)
-        .send({
-          message: 'Internal Server Error',
-        });
+      throw new DeletionError('You do not have sufficient rights');
+    }
+  } catch (err) {
+    if (err.name === 'CastError') {
+      next(new IncorrectRequestError('The data is incorrect'));
+    } else {
+      next(err);
     }
   }
 };
 
-const addCardLike = async (req, res) => {
+const addCardLike = async (req, res, next) => {
   try {
     const card = await Card.findByIdAndUpdate(
       req.params.cardId,
       { $addToSet: { likes: req.user._id } },
       { new: true },
-    )
-      .orFail(new Error('Not found'));
-    res.status(STATUS_CREATED).send(card);
+    );
+    if (card) {
+      res.status(STATUS_OK).send(card);
+    }
+    throw new NotFoundError('Card is not found');
   } catch (err) {
-    if (err.message === 'Not found') {
-      res
-        .status(ERROR_NOT_FOUND)
-        .send({
-          message: 'Card not found',
-        });
-    } else if (err.name === 'CastError') {
-      res
-        .status(ERROR_INCORRECT_REQUEST)
-        .send({
-          message: 'Data is incorrect',
-        });
+    if (err.name === 'CastError') {
+      next(new IncorrectRequestError('The data is incorrect'));
     } else {
-      res
-        .status(ERROR_INTERNAL_SERVER)
-        .send({
-          message: 'Internal Server Error',
-        });
+      next(err);
     }
   }
 };
 
-const deleteCardLike = async (req, res) => {
+const deleteCardLike = async (req, res, next) => {
   try {
     const card = await Card.findByIdAndUpdate(
       req.params.cardId,
-      { $pull: { likes: req.user } }, // убрать _id из массива +
+      { $pull: { likes: req.user._id } }, 
       { new: true },
-    )
-      .orFail(new Error('Not found'));
-    res.status(201).send(card);
+    );
+
+    if (card) {
+      res.status(STATUS_OK).send(card);
+    }
+    throw new NotFoundError('Card is not found');
   } catch (err) {
-    if (err.message === 'Not found') {
-      res
-        .status(ERROR_NOT_FOUND)
-        .send({
-          message: 'Card not found',
-        });
-    } else if (err.name === 'CastError') {
-      res
-        .status(ERROR_INCORRECT_REQUEST)
-        .send({
-          message: 'Data is incorrect',
-        });
+    if (err.name === 'CastError') {
+      next(new IncorrectRequestError('Data is incorrect'));
     } else {
-      res
-        .status(ERROR_INTERNAL_SERVER)
-        .send({
-          message: 'Internal server error',
-        });
+      next(err);
     }
   }
 };
