@@ -1,19 +1,20 @@
 const Card = require('../models/card');
 const {
-  STATUS_OK, STATUS_CREATED, ERROR_INCORRECT_REQUEST, ERROR_NOT_FOUND, ERROR_INTERNAL_SERVER,
+  STATUS_OK,
+  STATUS_CREATED
 } = require('../utils/status');
 const {
   IncorrectRequestError,
-  UnauthorizedError,
   DeletionError,
   NotFoundError,
-  EmailIsBusyError
 } = require('../utils/errors')
 
 const getCards = async (req, res) => {
   try {
     const cards = await Card.find({});
-    res.status(STATUS_OK).send(cards);
+    res
+      .status(STATUS_OK)
+      .send(cards);
   } catch (err) {
     next(err)
   }
@@ -24,7 +25,9 @@ const createCard = async (req, res, next) => {
   const owner = req.user._id;
   try {
     const card = await Card.create({ name, link, owner });
-    res.status(STATUS_CREATED).send(card);
+    res
+      .status(STATUS_CREATED)
+      .send(card);
   } catch (err) {
     if (err instanceof IncorrectRequestError) {
       next(new IncorrectRequestError('The data is incorrect'));
@@ -36,12 +39,14 @@ const createCard = async (req, res, next) => {
 
 const deleteCardById = async (req, res, next) => {
   try {
-    const card = await Card.findById(req.params.cardId);
+    const card = await Card
+      .findById(req.params.cardId);
     if (!card) {
       throw new NotFoundError('Card is not found');
     } else if (card.owner.toString() === req.user._id) {
       await Card.deleteOne(card);
-      res.status(STATUS_OK).send({ data: card });
+      res.status(STATUS_OK)
+        .send({ data: card });
     } else {
       throw new DeletionError('You do not have sufficient rights');
     }
@@ -62,7 +67,9 @@ const addCardLike = async (req, res, next) => {
       { new: true },
     );
     if (card) {
-      res.status(STATUS_OK).send(card);
+      res
+        .status(STATUS_OK)
+        .send(card);
     }
     throw new NotFoundError('Card is not found');
   } catch (err) {
@@ -78,12 +85,13 @@ const deleteCardLike = async (req, res, next) => {
   try {
     const card = await Card.findByIdAndUpdate(
       req.params.cardId,
-      { $pull: { likes: req.user._id } }, 
+      { $pull: { likes: req.user._id } },
       { new: true },
     );
-
     if (card) {
-      res.status(STATUS_OK).send(card);
+      res
+        .status(STATUS_OK)
+        .send(card);
     }
     throw new NotFoundError('Card is not found');
   } catch (err) {

@@ -5,58 +5,40 @@ const jsonWebToken = require('jsonwebtoken');
 const {
   STATUS_OK,
   STATUS_CREATED,
-  ERROR_INCORRECT_REQUEST,
-  ERROR_NOT_FOUND,
-  ERROR_INTERNAL_SERVER,
 } = require('../utils/status');
 
 const {
   IncorrectRequestError,
   UnauthorizedError,
-  DeletionError,
   NotFoundError,
   EmailIsBusyError
 } = require('../utils/errors')
 
-const getUsers = async (req, res) => {
+const getUsers = async (req, res, next) => {
   try {
-    const users = await User.find({});
-    res.status(STATUS_OK).send(users);
+    const users = await User
+      .find({});
+    res.status(STATUS_OK)
+      .send({ data: users });
   } catch (err) {
-    res
-      .status(ERROR_INTERNAL_SERVER)
-      .send({
-        message: 'Internal Server Error',
-        err: err.message,
-        stack: err.stack,
-      });
+    next(err);
   }
 };
 
-const getUserById = async (req, res) => {
+const getUserById = async (req, res, next) => {
   try {
-    const user = await User.findById(req.params.id)
-      .orFail(() => new Error('Not found'));
-    res.status(STATUS_CREATED).send(user);
+    const user = await User
+      .findById(req.params.userId);
+    if (user) {
+      res.status(STATUS_OK)
+        .send({ data: user });
+    }
+    throw new NotFoundError('User is not found');
   } catch (err) {
-    if (err.message === 'Not found') {
-      res
-        .status(ERROR_NOT_FOUND)
-        .send({
-          message: 'User not found',
-        });
-    } else if (err.name === 'CastError') {
-      res
-        .status(ERROR_INCORRECT_REQUEST)
-        .send({
-          message: 'Data is incorrect',
-        });
+    if (err.name === 'CastError') {
+      next(new BadRequestError('The data is incorrect'));
     } else {
-      res
-        .status(ERROR_INTERNAL_SERVER)
-        .send({
-          message: 'Internal server Error',
-        });
+      next(err);
     }
   }
 };
@@ -64,10 +46,12 @@ const getUserById = async (req, res) => {
 const createUser = async (req, res, next) => {
   const { name, email, password, about, avatar } = req.body;
   try {
-    const user = await User.create({ name, about, avatar });
-    const hashPassword = await bcrypts.hash(String(password), 10)
-    res.status(STATUS_CREATED)
-      .send(user);
+    const hashPassword = await bcrypt.hash(String(password), 10)
+    const user = await User
+      .create({ name, about, avatar, email, password: hashPassword });
+    res
+      .status(STATUS_CREATED)
+      .send({ data: user });
   } catch (err) {
     if (err instanceof IncorrectRequestError) {
       next(new IncorrectRequestError('Data is incorrect'));
@@ -96,7 +80,9 @@ const login = async (req, res, next) => {
           sameSite: true,
           secure: true,
         });
-        res.status(STATUS_OK).send({ data: user.toJSON() });
+        res
+          .status(STATUS_OK)
+          .send({ data: user.toJSON() });
       } else {
         throw new UnauthorizedError('Incorrect password or email');
       }
@@ -113,11 +99,14 @@ const login = async (req, res, next) => {
 
 const getInfo = async (req, res, next) => {
   try {
-    const user = await User.findById(req.user._id);
+    const user = await User
+      .findById(req.user._id);
     if (user) {
-      res.status(STATUS_OK).send({ data: user });
+      res
+        .status(STATUS_OK)
+        .send({ data: user });
     }
-    throw new NotFoundError('User not found');
+    throw new NotFoundError('User is not found');
   } catch (err) {
     next(err);
   }
@@ -132,7 +121,9 @@ const updateProfile = async (req, res, next) => {
       { new: true, runValidators: true },
     );
     if (user) {
-      res.status(STATUS_OK).send(user);
+      res
+        .status(STATUS_OK)
+        .send(user);
     }
     throw new NotFoundError('User not found');
   } catch (err) {
@@ -147,13 +138,16 @@ const updateProfile = async (req, res, next) => {
 const updateAvatar = async (req, res, next) => {
   const { avatar } = req.body;
   try {
-    const user = await User.findByIdAndUpdate(
-      req.user._id,
-      { avatar },
-      { new: true, runValidators: true },
-    );
+    const user = await User
+      .findByIdAndUpdate(
+        req.user._id,
+        { avatar },
+        { new: true, runValidators: true },
+      );
     if (user) {
-      res.status(STATUS_OK).send(user);
+      res
+        .status(STATUS_OK)
+        .send(user);
     }
     throw new NotFoundError('User not found');
   } catch (err) {
