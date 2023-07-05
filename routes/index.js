@@ -10,7 +10,7 @@ const { createUser, login } = require('../controllers/users');
 router.use('/users', userRoutes);
 router.use('/cards', cardRoutes);
 router.use('/*', (req, res) => {
-  res.status(ERROR_NOT_FOUND).send({ message: 'Eror 404. Page not found' });
+  res.status(ERROR_NOT_FOUND).send({ message: 'Error 404. Page not found' });
 });
 
 router.post('/signup', celebrate({
