@@ -9,12 +9,14 @@ const errorListener = require('./midlwares/error');
 const app = express();
 const { PORT = 3000, DB_URL = 'mongodb://127.0.0.1:27017/mestodb' } = process.env;
 
-app.use(express.json());
-app.use(cookieParser());
+
 
 mongoose.connect(DB_URL, {
   useNewUrlParser: true,
 });
+
+app.use(express.json());
+app.use(cookieParser());
 
 app.use(router);
 app.use(errors());

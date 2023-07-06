@@ -76,7 +76,7 @@ const login = async (req, res, next) => {
       if (isValidUser) {
         const jwt = jsonWebToken.sign({
           _id: user._id,
-        }, process.env.JWT_HASH);
+        }, process.env['JWT_SECRET']);
         res.cookie('jwt', jwt, {
           maxAge: 3600000 * 24 * 7,
           httpOnly: true,
@@ -87,6 +87,7 @@ const login = async (req, res, next) => {
           .status(STATUS_OK)
           .send({ data: user.toJSON() });
       } else {
+        console.log(res.status);
         throw new UnauthorizedError('Incorrect password or email');
       }
     } else { throw new UnauthorizedError('Incorrect password or email'); }

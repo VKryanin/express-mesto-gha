@@ -8,7 +8,7 @@ const auth = (req, res, next) => {
   }
   let payload;
   try {
-    payload = jwt.verify(token, process.env.JWT_HASH);
+    payload = jwt.verify(token, process.env['JWT_SECRET']);
   } catch (err) {
     return next(new UnauthorizedError('You should be authenticated'));
   }
