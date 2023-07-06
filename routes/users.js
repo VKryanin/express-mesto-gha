@@ -29,10 +29,10 @@ router.patch('/me', celebrate({
   }),
 }), updateProfile);
 
-// router.patch('/me/avatar', celebrate({
-//   body: Joi.object().keys({
-//     avatar: Joi.string().required().pattern(urlCheking),
-//   }),
-// }), updateAvatar);
+router.patch('/me/avatar', celebrate({
+  body: Joi.object().keys({
+    avatar: Joi.string().required().pattern(urlCheking),
+  }),
+}), updateAvatar);
 
 module.exports = router;
