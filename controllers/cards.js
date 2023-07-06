@@ -3,13 +3,12 @@ const {
   STATUS_OK,
   STATUS_CREATED,
 } = require('../utils/status');
-const {
-  IncorrectRequestError,
-  DeletionError,
-  NotFoundError,
-} = require('../utils/errors');
 
-const getCards = async (req, res) => {
+const { IncorrectRequestError } = require('../utils/errors/IncorrectRequestError');
+const { NotFoundError } = require('../utils/errors/NotFoundError');
+const { DeletionError } = require('../utils/errors/DeletionError');
+
+const getCards = async (req, res, next) => {
   try {
     const cards = await Card.find({});
     res

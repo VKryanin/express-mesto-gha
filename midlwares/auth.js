@@ -1,10 +1,8 @@
 const jwt = require('jsonwebtoken');
-const UnauthorizedError = require('../utils/errors');
-// Мидлвара это функция которая будет вызываться на каждый запрос
+const UnauthorizedError = require('../utils/errors/UnauthorizedError');
 
 const auth = (req, res, next) => {
   const token = req.cookies.jwt;
-
   if (!token) {
     return next(new UnauthorizedError('You should be authenticated'));
   }

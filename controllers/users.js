@@ -7,12 +7,10 @@ const {
   STATUS_CREATED,
 } = require('../utils/status');
 
-const {
-  IncorrectRequestError,
-  UnauthorizedError,
-  NotFoundError,
-  EmailIsBusyError,
-} = require('../utils/errors');
+const { IncorrectRequestError } = require('../utils/errors/IncorrectRequestError');
+const { UnauthorizedError } = require('../utils/errors/UnauthorizedError');
+const { NotFoundError } = require('../utils/errors/NotFoundError');
+const { EmailIsBusyError } = require('../utils/errors/EmailIsBusyError');
 
 const getUsers = async (req, res, next) => {
   try {
@@ -36,7 +34,7 @@ const getUserById = async (req, res, next) => {
     throw new NotFoundError('User is not found');
   } catch (err) {
     if (err.name === 'CastError') {
-      next(new BadRequestError('The data is incorrect'));
+      next(new IncorrectRequestError('The data is incorrect'));
     } else {
       next(err);
     }
