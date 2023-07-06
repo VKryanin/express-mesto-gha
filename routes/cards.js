@@ -7,7 +7,7 @@ const {
   addCardLike,
   deleteCardLike,
 } = require('../controllers/cards');
-const { urlCheking } = require('../utils/regular');
+const urlCheking = require('../utils/regular');
 
 router.get('/', getCards);
 
