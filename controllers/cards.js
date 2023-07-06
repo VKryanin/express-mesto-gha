@@ -69,8 +69,9 @@ const addCardLike = async (req, res, next) => {
       res
         .status(STATUS_OK)
         .send(card);
+    } else {
+      throw new NotFoundError('Card is not found');
     }
-    throw new NotFoundError('Card is not found');
   } catch (err) {
     if (err.name === 'CastError') {
       next(new IncorrectRequestError('The data is incorrect'));
@@ -91,8 +92,9 @@ const deleteCardLike = async (req, res, next) => {
       res
         .status(STATUS_OK)
         .send(card);
+    } else {
+      throw new NotFoundError('Card is not found');
     }
-    throw new NotFoundError('Card is not found');
   } catch (err) {
     if (err.name === 'CastError') {
       next(new IncorrectRequestError('Data is incorrect'));
