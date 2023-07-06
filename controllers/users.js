@@ -31,7 +31,9 @@ const getUserById = async (req, res, next) => {
       res.status(STATUS_OK)
         .send({ data: user });
     }
-    throw new NotFoundError('User is not found');
+    else {
+      throw new NotFoundError('User is not found');
+    }
   } catch (err) {
     if (err.name === 'CastError') {
       next(new IncorrectRequestError('The data is incorrect'));
@@ -88,8 +90,7 @@ const login = async (req, res, next) => {
       } else {
         throw new UnauthorizedError('Incorrect password or email');
       }
-    }
-    throw new UnauthorizedError('Incorrect password or email');
+    } else { throw new UnauthorizedError('Incorrect password or email'); }
   } catch (err) {
     if (err instanceof IncorrectRequestError) {
       next(new IncorrectRequestError('Data is incorrect'));
@@ -107,8 +108,9 @@ const getInfo = async (req, res, next) => {
       res
         .status(STATUS_OK)
         .send({ data: user });
+    } else {
+      throw new NotFoundError('User is not found');
     }
-    throw new NotFoundError('User is not found');
   } catch (err) {
     next(err);
   }
@@ -126,8 +128,9 @@ const updateProfile = async (req, res, next) => {
       res
         .status(STATUS_OK)
         .send(user);
+    } else {
+      throw new NotFoundError('User not found');
     }
-    throw new NotFoundError('User not found');
   } catch (err) {
     if (err instanceof IncorrectRequestError) {
       next(new IncorrectRequestError('Data is incorrect'));
@@ -150,8 +153,9 @@ const updateAvatar = async (req, res, next) => {
       res
         .status(STATUS_OK)
         .send(user);
+    } else {
+      throw new NotFoundError('User not found');
     }
-    throw new NotFoundError('User not found');
   } catch (err) {
     if (err instanceof IncorrectRequestError) {
       next(new IncorrectRequestError('Data is incorrect'));
