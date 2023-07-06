@@ -30,8 +30,7 @@ const getUserById = async (req, res, next) => {
     if (user) {
       res.status(STATUS_OK)
         .send({ data: user });
-    }
-    else {
+    } else {
       throw new NotFoundError('User is not found');
     }
   } catch (err) {
@@ -119,7 +118,7 @@ const getInfo = async (req, res, next) => {
 const updateProfile = async (req, res, next) => {
   const { name, about } = req.body;
   try {
-    const user = await User.updateOne(
+    const user = await User.findByIdAndUpdate(
       req.user._id,
       { name, about },
       { new: true, runValidators: true },
