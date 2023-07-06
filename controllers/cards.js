@@ -1,13 +1,13 @@
 const Card = require('../models/card');
 const {
   STATUS_OK,
-  STATUS_CREATED
+  STATUS_CREATED,
 } = require('../utils/status');
 const {
   IncorrectRequestError,
   DeletionError,
   NotFoundError,
-} = require('../utils/errors')
+} = require('../utils/errors');
 
 const getCards = async (req, res) => {
   try {
@@ -16,7 +16,7 @@ const getCards = async (req, res) => {
       .status(STATUS_OK)
       .send(cards);
   } catch (err) {
-    next(err)
+    next(err);
   }
 };
 

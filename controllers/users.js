@@ -1,6 +1,6 @@
-const User = require('../models/user');
 const bcrypt = require('bcryptjs');
 const jsonWebToken = require('jsonwebtoken');
+const User = require('../models/user');
 
 const {
   STATUS_OK,
@@ -11,8 +11,8 @@ const {
   IncorrectRequestError,
   UnauthorizedError,
   NotFoundError,
-  EmailIsBusyError
-} = require('../utils/errors')
+  EmailIsBusyError,
+} = require('../utils/errors');
 
 const getUsers = async (req, res, next) => {
   try {
@@ -44,11 +44,15 @@ const getUserById = async (req, res, next) => {
 };
 
 const createUser = async (req, res, next) => {
-  const { name, email, password, about, avatar } = req.body;
+  const {
+    name, email, password, about, avatar,
+  } = req.body;
   try {
-    const hashPassword = await bcrypt.hash(String(password), 10)
+    const hashPassword = await bcrypt.hash(String(password), 10);
     const user = await User
-      .create({ name, about, avatar, email, password: hashPassword });
+      .create({
+        name, about, avatar, email, password: hashPassword,
+      });
     res
       .status(STATUS_CREATED)
       .send({ data: user });
@@ -73,7 +77,7 @@ const login = async (req, res, next) => {
       if (isValidUser) {
         const jwt = jsonWebToken.sign({
           _id: user._id,
-        }, process.env['JWT_HASH']);
+        }, process.env.JWT_HASH);
         res.cookie('jwt', jwt, {
           maxAge: 3600000 * 24 * 7,
           httpOnly: true,
@@ -166,5 +170,5 @@ module.exports = {
   updateAvatar,
   updateProfile,
   login,
-  getInfo
+  getInfo,
 };

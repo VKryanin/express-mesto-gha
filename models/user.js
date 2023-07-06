@@ -6,14 +6,14 @@ const userSchema = new mongoose.Schema({
     type: String,
     minlength: 2,
     maxlength: 30,
-    default: 'Жак-Ив Кусто'
+    default: 'Жак-Ив Кусто',
   },
 
   email: {
     type: String,
     validate: {
       validator: (mail) => validator.isEmail(mail),
-      message: 'Invalid Email'
+      message: 'Invalid Email',
     },
     required: true,
     unique: true,
@@ -29,7 +29,7 @@ const userSchema = new mongoose.Schema({
     type: String,
     minlength: 2,
     maxlength: 30,
-    default: 'Исследователь'
+    default: 'Исследователь',
   },
 
   avatar: {
@@ -38,7 +38,7 @@ const userSchema = new mongoose.Schema({
     validate: {
       validator: (url) => validator.isURL(url),
       message: 'Invalid URL',
-    }
+    },
   },
 });
 

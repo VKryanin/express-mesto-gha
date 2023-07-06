@@ -1,13 +1,14 @@
 const router = require('express').Router();
+const { celebrate, Joi } = require('celebrate');
 const {
   getUsers,
   getUserById,
   createUser,
   updateAvatar,
   updateProfile,
-  getInfo
+  getInfo,
 } = require('../controllers/users');
-const { celebrate, Joi } = require('celebrate');
+const { urlCheking } = require('../utils/regular');
 
 router.get('/', getUsers);
 
@@ -30,7 +31,7 @@ router.patch('/me', celebrate({
 
 router.patch('/me/avatar', celebrate({
   body: Joi.object().keys({
-    avatar: Joi.string().required().pattern(urlPattern),
+    avatar: Joi.string().required().pattern(urlCheking),
   }),
 }), updateAvatar);
 

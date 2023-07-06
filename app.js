@@ -1,12 +1,12 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const router = require('./routes');
 const cookieParser = require('cookie-parser');
-const errorListener = require('./midlwares/error');
 const { errors } = require('celebrate');
+const router = require('./routes');
+const errorListener = require('./midlwares/error');
 
 const app = express();
-const { PORT = 3000, DB_URL = 'mongodb://127.0.0.1:27017/mestodb' } = process.env; 
+const { PORT = 3000, DB_URL = 'mongodb://127.0.0.1:27017/mestodb' } = process.env;
 
 app.use(express.json());
 app.use(cookieParser());
